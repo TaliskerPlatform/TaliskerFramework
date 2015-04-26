@@ -1,0 +1,74 @@
+cpp_quote("/* Copyright 2015 Mo McRoberts.");
+cpp_quote(" *");
+cpp_quote(" *  Licensed under the Apache License, Version 2.0 (the \"License\");");
+cpp_quote(" *  you may not use this file except in compliance with the License.");
+cpp_quote(" *  You may obtain a copy of the License at");
+cpp_quote(" *");
+cpp_quote(" *      http://www.apache.org/licenses/LICENSE-2.0");
+cpp_quote(" *");
+cpp_quote(" *  Unless required by applicable law or agreed to in writing, software");
+cpp_quote(" *  distributed under the License is distributed on an \"AS IS\" BASIS,");
+cpp_quote(" *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
+cpp_quote(" *  See the License for the specific language governing permissions and");
+cpp_quote(" *  limitations under the License.");
+cpp_quote(" */");
+
+import "IObject.idl";
+
+interface IControl;
+
+[
+	object,
+	uuid(7d36bed4-bcc6-45a9-bc65-49db7b35a42c),
+	pointer_default(unique),
+	cheader("Talisker/IEvent.h")
+]
+interface IEvent: IObject
+{
+	/* The following definitions are in Talisker/Coordinates.hh, but
+	 * we need comparable declarations to be visible to IDL
+	 */
+	cpp_quote("#if defined(__cplusplus)");
+	cpp_quote("# include <Talisker/Coordinates.hh>");
+	cpp_quote("typedef Talisker::Rect TaliskerRect;");
+	cpp_quote("#else");
+
+	typedef struct
+	{
+		float x;
+		float y;
+	} TaliskerPoint;
+
+	typedef struct
+	{
+		float width;
+		float height;
+	} TaliskerBounds;
+
+	typedef struct
+	{
+		TaliskerPoint origin;
+		TaliskerBounds bounds;
+	} TaliskerRect;
+
+	cpp_quote("#endif /*!__cplusplus*/");
+
+	typedef enum
+	{
+		EVM_DRAW = (1<<0)
+	} TaliskerEventMask;
+
+	typedef enum
+	{
+		EVT_NOOP,
+		EVT_DRAW
+	} TaliskerEventType;
+
+	cpp_quote("#include <Talisker/IControl.h>");
+
+	TaliskerEventType eventType(void);
+	IControl *control(void);
+
+	TaliskerRect rect(void);
+
+}
