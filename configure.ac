@@ -65,9 +65,16 @@ AC_CHECK_FUNC([uuid_generate],,[
 
 AC_CHECK_FUNC([pthread_create],,[
 	AC_CHECK_LIB([pthread],[pthread_create],,[
-		AC_MSG_ERROR([cannot locate POSIX threads library])
+		AC_MSG_ERROR([cannot locate POSIX threads library (-lpthread)])
 	])
 ])
+
+AC_CHECK_FUNC([dlopen],,[
+	AC_CHECK_LIB([dl],[dlopen],,[
+		AC_MSG_ERROR([cannot locate dynamic loader library (-ldl)])
+	])
+])
+
 
 PRIVATE_CONFIG_URIPARSER
 
@@ -83,6 +90,7 @@ UI/Makefile
 XCB/Makefile
 Samples/Makefile
 Samples/HelloApp/Makefile
+Tools/Makefile
 ])
 
 AC_OUTPUT

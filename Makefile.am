@@ -20,7 +20,7 @@ frameworkdir = $(prefix)/Library/Frameworks/Talisker.framework
 fwlibdir = $(frameworkdir)/Versions/$(VERSION)/Libraries
 
 DIST_SUBDIRS = Talisker IDL Foundation UI XCB uriparser m4 \
-	Samples
+	Tools Samples
 
 SUBDIRS = Talisker IDL Foundation UI uriparser
 
@@ -28,7 +28,7 @@ if WITH_XCB
 SUBDIRS += XCB
 endif
 
-SUBDIRS += . Samples
+SUBDIRS += . Tools Samples
 
 fwlib_LTLIBRARIES = libTalisker.la
 
