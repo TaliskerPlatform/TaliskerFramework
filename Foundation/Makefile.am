@@ -15,6 +15,6 @@
 noinst_LTLIBRARIES = libTaliskerFoundation.la
 
 libTaliskerFoundation_la_SOURCES = p_foundation.hh \
-	Object.cc Process.cc Thread.cc DefaultAllocator.cc
+	Object.cc Process.cc Thread.cc DefaultAllocator.cc String.cc
 
 libTaliskerFoundation_la_LDFLAGS = -avoid-version

@@ -35,6 +35,7 @@
 #  include <Talisker/DefaultAllocator.hh>
 #  include <Talisker/Process.hh>
 #  include <Talisker/Thread.hh>
+#  include <Talisker/String.hh>
 
 /* UI */
 #  include <Talisker/Coordinates.hh>
