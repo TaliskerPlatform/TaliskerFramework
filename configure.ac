@@ -56,6 +56,13 @@ else
 	AC_MSG_ERROR([no suitable GUI back-end could be determined])
 fi
 
+AC_CHECK_FUNC([uuid_generate],,[
+	AC_CHECK_LIB([uuid],[uuid_generate],,[
+		AC_MSG_ERROR([cannot locate UUID library (-luuid)])
+	])
+])
+
+
 AC_CHECK_FUNC([pthread_create],,[
 	AC_CHECK_LIB([pthread],[pthread_create],,[
 		AC_MSG_ERROR([cannot locate POSIX threads library])

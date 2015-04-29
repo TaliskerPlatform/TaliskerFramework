@@ -29,6 +29,7 @@
 # if defined(__linux__)
 #  include <sys/syscall.h>
 # endif
+# include <uuid/uuid.h>
 # include <Uri.h>
 
 # include <Talisker/Talisker.h>

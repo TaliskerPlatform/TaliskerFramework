@@ -37,6 +37,7 @@
 #  include <Talisker/Thread.hh>
 #  include <Talisker/String.hh>
 #  include <Talisker/URI.hh>
+#  include <Talisker/UUID.hh>
 
 /* UI */
 #  include <Talisker/Coordinates.hh>
