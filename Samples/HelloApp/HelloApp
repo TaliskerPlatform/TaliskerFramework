@@ -31,13 +31,13 @@ DUALCASE=1; export DUALCASE # for MKS sh
 # if CDPATH is set.
 (unset CDPATH) >/dev/null 2>&1 && unset CDPATH
 
-relink_command="(cd /home/mo/2015/Talisker/TaliskerFramework/HelloApp; { test -z \"\${LIBRARY_PATH+set}\" || unset LIBRARY_PATH || { LIBRARY_PATH=; export LIBRARY_PATH; }; }; { test -z \"\${COMPILER_PATH+set}\" || unset COMPILER_PATH || { COMPILER_PATH=; export COMPILER_PATH; }; }; { test -z \"\${GCC_EXEC_PREFIX+set}\" || unset GCC_EXEC_PREFIX || { GCC_EXEC_PREFIX=; export GCC_EXEC_PREFIX; }; }; { test -z \"\${LD_RUN_PATH+set}\" || unset LD_RUN_PATH || { LD_RUN_PATH=; export LD_RUN_PATH; }; }; { test -z \"\${LD_LIBRARY_PATH+set}\" || unset LD_LIBRARY_PATH || { LD_LIBRARY_PATH=; export LD_LIBRARY_PATH; }; }; PATH=/home/mo/Tools:/opt/xapian/bin:/opt/local/bin:/usr/local/bin:/opt/llvm/bin:/usr/local/bin:/usr/bin:/bin:/usr/games; export PATH; clang++ -g -O2 -ggdb -O0 -o \$progdir/\$file main.o  ../.libs/libTalisker.so -lpthread -Wl,-rpath -Wl,/home/mo/2015/Talisker/TaliskerFramework/.libs -Wl,-rpath -Wl,/Preview/Library/Frameworks/Talisker.framework/Versions/develop/Libraries)"
+relink_command="(cd /home/mo/2015/Talisker/TaliskerFramework/Samples/HelloApp; { test -z \"\${LIBRARY_PATH+set}\" || unset LIBRARY_PATH || { LIBRARY_PATH=; export LIBRARY_PATH; }; }; { test -z \"\${COMPILER_PATH+set}\" || unset COMPILER_PATH || { COMPILER_PATH=; export COMPILER_PATH; }; }; { test -z \"\${GCC_EXEC_PREFIX+set}\" || unset GCC_EXEC_PREFIX || { GCC_EXEC_PREFIX=; export GCC_EXEC_PREFIX; }; }; { test -z \"\${LD_RUN_PATH+set}\" || unset LD_RUN_PATH || { LD_RUN_PATH=; export LD_RUN_PATH; }; }; { test -z \"\${LD_LIBRARY_PATH+set}\" || unset LD_LIBRARY_PATH || { LD_LIBRARY_PATH=; export LD_LIBRARY_PATH; }; }; PATH=/home/mo/Tools:/opt/xapian/bin:/opt/local/bin:/usr/local/bin:/opt/llvm/bin:/usr/local/bin:/usr/bin:/bin:/usr/games; export PATH; clang++ -g -O2 -ggdb -O0 -o \$progdir/\$file main.o  ../../.libs/libTalisker.so -ldl -lpthread -luuid -Wl,-rpath -Wl,/home/mo/2015/Talisker/TaliskerFramework/.libs -Wl,-rpath -Wl,/Preview/Library/Frameworks/Talisker.framework/Versions/develop/Libraries)"
 
 # This environment variable determines our operation mode.
 if test "$libtool_install_magic" = "%%%MAGIC variable%%%"; then
   # install mode needs the following variables:
   generated_by_libtool_version='2.4.2'
-  notinst_deplibs=' ../libTalisker.la'
+  notinst_deplibs=' ../../libTalisker.la'
 else
   # When we are sourced in execute mode, $file and $ECHO are already set.
   if test "$libtool_execute_magic" != "%%%MAGIC variable%%%"; then
@@ -64,7 +64,7 @@ _LTECHO_EOF'
 # --lt-dump-script. There is, deliberately, no --lt-help.
 #
 # The first argument to this parsing function should be the
-# script's ../libtool value, followed by no.
+# script's ../../libtool value, followed by no.
 lt_option_debug=
 func_parse_lt_options ()
 {

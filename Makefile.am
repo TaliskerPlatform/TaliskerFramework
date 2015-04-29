@@ -19,7 +19,8 @@ dist_noinst_DATA = LICENSE-2.0 README.md
 frameworkdir = $(prefix)/Library/Frameworks/Talisker.framework
 fwlibdir = $(frameworkdir)/Versions/$(VERSION)/Libraries
 
-DIST_SUBDIRS = Talisker IDL Foundation UI XCB HelloApp uriparser m4
+DIST_SUBDIRS = Talisker IDL Foundation UI XCB uriparser m4 \
+	Samples
 
 SUBDIRS = Talisker IDL Foundation UI uriparser
 
@@ -27,7 +28,7 @@ if WITH_XCB
 SUBDIRS += XCB
 endif
 
-SUBDIRS += . HelloApp
+SUBDIRS += . Samples
 
 fwlib_LTLIBRARIES = libTalisker.la
 

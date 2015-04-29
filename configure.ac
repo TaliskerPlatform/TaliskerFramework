@@ -81,7 +81,8 @@ IDL/Makefile
 Foundation/Makefile
 UI/Makefile
 XCB/Makefile
-HelloApp/Makefile
+Samples/Makefile
+Samples/HelloApp/Makefile
 ])
 
 AC_OUTPUT
