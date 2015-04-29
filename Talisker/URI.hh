@@ -13,24 +13,23 @@
  *  limitations under the License.
  */
 
-#ifndef P_FOUNDATION_HH_
-# define P_FOUNDATION_HH_              1
+#ifndef TALISKER_URI_HH_
+# define TALISKER_URI_HH_               1
 
-# define TALISKER_INTERNAL_            1
-# define _BSD_SOURCE
+# include <Talisker/Object.hh>
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <stdarg.h>
-# include <string.h>
-# include <unistd.h>
-# include <pthread.h>
-# include <syslog.h>
-# if defined(__linux__)
-#  include <sys/syscall.h>
-# endif
-# include <Uri.h>
+typedef struct UriUriStructA TaliskerUriPrivate_;
 
-# include <Talisker/Talisker.h>
+namespace Talisker
+{
+	class URI: public Object
+	{
+	public:
+		URI(const char *uri);
+		virtual ~URI();
+	protected:
+		struct ::UriUriStructA *m_uri;
+	};
+};
 
-#endif /*!P_FOUNDATION_HH_*/
+#endif /*!TALISKER_URI_HH_*/

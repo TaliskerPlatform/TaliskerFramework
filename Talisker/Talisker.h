@@ -36,6 +36,7 @@
 #  include <Talisker/Process.hh>
 #  include <Talisker/Thread.hh>
 #  include <Talisker/String.hh>
+#  include <Talisker/URI.hh>
 
 /* UI */
 #  include <Talisker/Coordinates.hh>

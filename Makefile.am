@@ -12,14 +12,16 @@
 ##  See the License for the specific language governing permissions and
 ##  limitations under the License.
 
+ACLOCAL_AMFLAGS = -I m4
+
 dist_noinst_DATA = LICENSE-2.0 README.md
 
 frameworkdir = $(prefix)/Library/Frameworks/Talisker.framework
 fwlibdir = $(frameworkdir)/Versions/$(VERSION)/Libraries
 
-DIST_SUBDIRS = Talisker IDL Foundation UI XCB HelloApp
+DIST_SUBDIRS = Talisker IDL Foundation UI XCB HelloApp uriparser m4
 
-SUBDIRS = Talisker IDL Foundation UI
+SUBDIRS = Talisker IDL Foundation UI uriparser
 
 if WITH_XCB
 SUBDIRS += XCB
@@ -38,7 +40,7 @@ if WITH_XCB
 libTalisker_la_LIBADD += XCB/libTaliskerXCB.la
 endif
 
-libTalisker_la_LIBADD += -luuid
+libTalisker_la_LIBADD += uriparser/liburiparser.la -luuid
 
 libTalisker_la_LDFLAGS = -avoid-version
 

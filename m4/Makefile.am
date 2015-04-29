@@ -12,9 +12,4 @@
 ##  See the License for the specific language governing permissions and
 ##  limitations under the License.
 
-noinst_LTLIBRARIES = libTaliskerFoundation.la
-
-libTaliskerFoundation_la_SOURCES = p_foundation.hh \
-	Object.cc Process.cc Thread.cc DefaultAllocator.cc URI.cc String.cc
-
-libTaliskerFoundation_la_LDFLAGS = -avoid-version
+EXTRA_DIST = pkg.m4 uriparser.m4

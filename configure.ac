@@ -18,7 +18,7 @@ test x"$CPPFLAGS" = x"" && empty_cppflags=yes
 test x"$CXXFLAGS" = x"" && empty_cxxflags=yes
 test x"$CFLAGS" = x"" && empty_cflags=yes
 
-AC_CONFIG_MACRO_DIR([.])
+AC_CONFIG_MACRO_DIR([m4])
 AC_PREFIX_DEFAULT([/Preview])
 AM_INIT_AUTOMAKE([foreign])
 AM_MAINTAINER_MODE
@@ -32,6 +32,9 @@ if test x"$IDL" = x"" ; then
 	AC_MSG_ERROR([cannot find the Talisker IDL compiler, which is required to build the Talisker framework])
 fi
 LT_INIT
+
+AM_CPPFLAGS="-I\${top_builddir} -I\${top_srcdir}"
+AM_CPPFLAGS="$AM_CPPFLAGS -I\${top_builddir}/uriparser/include/uriparser -I\${top_srcdir}/uriparser/include/uriparser"
 
 AC_SUBST([AM_CPPFLAGS])
 
@@ -59,8 +62,11 @@ AC_CHECK_FUNC([pthread_create],,[
 	])
 ])
 
+PRIVATE_CONFIG_URIPARSER
+
 AC_CONFIG_FILES([
 Makefile
+m4/Makefile
 Talisker/Makefile
 Talisker/Internal/Makefile
 Talisker/Internal/XCB/Makefile

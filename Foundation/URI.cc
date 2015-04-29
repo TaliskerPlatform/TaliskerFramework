@@ -1,4 +1,4 @@
-/* Copyright 2015 Mo McRoberts.
+/* Copyright 2012-2015 Mo McRoberts.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,24 +13,43 @@
  *  limitations under the License.
  */
 
-#ifndef P_FOUNDATION_HH_
-# define P_FOUNDATION_HH_              1
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
 
-# define TALISKER_INTERNAL_            1
-# define _BSD_SOURCE
+#include "p_foundation.hh"
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <stdarg.h>
-# include <string.h>
-# include <unistd.h>
-# include <pthread.h>
-# include <syslog.h>
-# if defined(__linux__)
-#  include <sys/syscall.h>
-# endif
-# include <Uri.h>
+using namespace Talisker;
 
-# include <Talisker/Talisker.h>
+static UriUriA *
+uri_parse(const char *str)
+{
+	UriUriA *uri;
+	UriParserStateA state;
 
-#endif /*!P_FOUNDATION_HH_*/
+	uri = new UriUriA;
+	state.uri = uri;
+	if(uriParseUriA(&state, str) != URI_SUCCESS)
+	{
+		Talisker::err("failed to parse URI <%s>\n", str);
+		delete uri;
+		return NULL;
+	}
+	return uri;
+}
+
+URI::URI(const char *uri):
+	Object::Object()
+{
+	m_uri = uri_parse(uri);   
+}
+
+URI::~URI()
+{
+	if(m_uri)
+	{
+		uriFreeUriMembersA(m_uri);
+		delete m_uri;
+	}
+}
+
