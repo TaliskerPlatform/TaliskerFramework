@@ -1,3 +1,4 @@
 /interfaces.h
 /IObject.h
 /IApplication.h
+/IFactory.h

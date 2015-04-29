@@ -12,5 +12,6 @@
 ##  See the License for the specific language governing permissions and
 ##  limitations under the License.
 
-dist_noinst_DATA = Interfaces.idl IObject.idl IAllocator.idl \
+dist_noinst_DATA = Interfaces.idl \
+	IObject.idl IAllocator.idl IFactory.idl \
 	IApplication.idl IApplicationDelegate.idl IEvent.idl IControl.idl

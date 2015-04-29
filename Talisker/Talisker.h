@@ -16,8 +16,12 @@
 #ifndef TALISKER_TALISKER_H_
 # define TALISKER_TALISKER_H_           1
 
+/* Foundation interfaces */
 # include <Talisker/IObject.h>
 # include <Talisker/IAllocator.h>
+# include <Talisker/IFactory.h>
+
+/* UI interfaces */
 # include <Talisker/IApplication.h>
 # include <Talisker/IApplicationDelegate.h>
 # include <Talisker/IEvent.h>
@@ -27,8 +31,9 @@
 
 /* Foundation */
 #  include <Talisker/Object.hh>
-#  include <Talisker/Process.hh>
+#  include <Talisker/Factory.hh>
 #  include <Talisker/DefaultAllocator.hh>
+#  include <Talisker/Process.hh>
 #  include <Talisker/Thread.hh>
 
 /* UI */
