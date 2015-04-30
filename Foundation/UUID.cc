@@ -39,6 +39,12 @@ UUID::UUID(const UUID *uuid):
 	memcpy(m_uuid, uuid->m_uuid, sizeof(m_uuid));
 }
 
+UUID::UUID(const uuid_t uuid):
+	Object::Object()
+{
+	memcpy(m_uuid, uuid, sizeof(m_uuid));
+}
+
 UUID::~UUID()
 {
 }

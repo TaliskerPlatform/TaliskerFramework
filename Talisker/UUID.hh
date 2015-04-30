@@ -33,8 +33,9 @@ namespace Talisker
 		/* Duplicate a UUID object */
 		UUID(const UUID &uuid);
 		UUID(const UUID *uuid);
-		/* Parse a UUID string */
+		/* Represent a UUID object */
 		UUID(const uuid_t uuid);
+		/* Parse a UUID string */
 		UUID(const char *uuidstr);
 		UUID(const String &uuidstr);
 		UUID(const String *uuidstr);
