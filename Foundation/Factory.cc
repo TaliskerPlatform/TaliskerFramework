@@ -21,3 +21,48 @@
 
 using namespace Talisker;
 
+Factory::Factory():
+	Object::Object()
+{
+}
+
+Factory::~Factory()
+{
+}
+
+int __stdcall
+Factory::queryInterface(const uuid_t iid, void **object)
+{
+	if(!uuid_compare(iid, IID_IFactory))
+	{
+		*object = static_cast<IFactory *>(this);
+		return 0;
+	}
+	return Object::queryInterface(iid, object);
+}
+
+int __stdcall
+Factory::createInstance(IObject *outer, const uuid_t iid, void **object)
+{
+	(void) outer;
+	(void) iid;
+	(void) object;
+
+	return -1;
+}
+
+int __stdcall
+Factory::lock(bool lock)
+{
+	if(lock)
+	{
+		this->retain();
+	}
+	else
+	{
+		this->release();
+	}
+	return 0;
+}
+
+

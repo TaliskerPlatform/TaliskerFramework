@@ -17,14 +17,16 @@
 # define TALISKER_APPLICATION_HH_       1
 
 # include <Talisker/Object.hh>
+# include <Talisker/Factory.hh>
 # include <Talisker/IApplication.h>
+# include <Talisker/IFactory.h>
 
 namespace Talisker
 {
 
 	int ApplicationMain(int argc, char **argv);
 
-	class Application: virtual public IApplication, virtual public IApplicationDelegate, public Object
+	class Application: virtual public IApplication, virtual public IApplicationDelegate, public Factory
 	{
 	public:
 		static Application *sharedApplication(void);
@@ -36,6 +38,9 @@ namespace Talisker
 
 		/* IObject */
 		virtual int __stdcall queryInterface(const uuid_t riid, void **object);
+		
+		/* IFactory */
+		virtual int __stdcall createInstance(IObject *outer, const uuid_t iid, void **object);
 
 		/* IApplication */
 		virtual IApplicationDelegate *__stdcall delegate(void);
@@ -57,5 +62,8 @@ namespace Talisker
 	};
 	
 };
+
+/* f5235e89-4a83-4f4e-8b93-78ec5d544379 */
+UUID_DEFINE(CLSID_Talisker_Application, 0xf5, 0x23, 0x5e, 0x89, 0x4a, 0x83, 0x4f, 0x4e, 0x8b, 0x93, 0x78, 0xec, 0x5d, 0x54, 0x43, 0x79);
 
 #endif /*!TALISKER_APPLICATION_HH_*/

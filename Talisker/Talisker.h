@@ -20,6 +20,7 @@
 # include <Talisker/IObject.h>
 # include <Talisker/IAllocator.h>
 # include <Talisker/IFactory.h>
+# include <Talisker/IRegistry.h>
 
 /* UI interfaces */
 # include <Talisker/IApplication.h>
@@ -38,6 +39,7 @@
 #  include <Talisker/String.hh>
 #  include <Talisker/URI.hh>
 #  include <Talisker/UUID.hh>
+#  include <Talisker/Registry.hh>
 
 /* UI */
 #  include <Talisker/Coordinates.hh>

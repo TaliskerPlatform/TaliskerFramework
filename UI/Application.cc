@@ -21,16 +21,27 @@
 
 using namespace Talisker;
 
-static Application sharedApp;
-
-Application *Application::m_sharedApp;
+Application *Application::m_sharedApp = NULL;
 
 static Control *test_control;
+
+extern "C" void __attribute__((constructor))
+talisker_application_init_(int argc, char **argv, char **envp)
+{
+	Application *app;
+
+	(void) argc;
+	(void) argv;
+	(void) envp;
+	
+	app = Application::sharedApplication();
+}
 
 int
 Talisker::ApplicationMain(int argc, char **argv)
 {
-	Application *app;
+	IFactory *factory;
+	IApplication *app;
 	Thread *thread;
 
 	(void) argc;
@@ -48,10 +59,24 @@ Talisker::ApplicationMain(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	/* TODO: allow application class to be overridden */
-	app = Application::sharedApplication();
+	factory = Registry::sharedRegistry()->factory(CLSID_Talisker_Application);
+	if(!factory)
+	{
+		UUID uu(CLSID_Talisker_Application);
+		String *s = uu.string();
+		Talisker::err("failed to obtain factory for {%s}\n", s->c_str());
+		s->release();
+		return 1;
+	}
+	if(factory->createInstance(NULL, IID_IApplication, (void **) &app))
+	{
+		factory->release();
+		Talisker::err("Application factory failed to provide an IApplication instance\n");
+		return 1;
+	}
+	factory->release();
 	/* TODO: now the application has been initialised, load UI resources */
 	app->run();
-
 	return 0;
 }
 
@@ -71,28 +96,29 @@ Application::sharedApplication()
 #else
 # error No GUI implementation available
 #endif
-	sharedApp = Application(aggregate);
-	m_sharedApp = &sharedApp;
+	m_sharedApp = new Application(aggregate);
 	m_sharedApp->m_refcount = -1;
 	aggregate->setOuter(m_sharedApp);
 	return m_sharedApp;
 }
 
 Application::Application():
-	Object::Object(),
+	Factory::Factory(),
 	m_aggregate(NULL)
 {
 }
 
 Application::Application(IApplication *aggregate):
-	Object::Object(),
+	Factory::Factory(),
 	m_aggregate(aggregate)
 {
 	m_aggregate->retain();
+	Registry::sharedRegistry()->registerFactory(CLSID_Talisker_Application, this);
 }
 
 Application::~Application()
 {
+	Registry::sharedRegistry()->unregisterFactory(CLSID_Talisker_Application, this);
 	if(m_aggregate)
 	{
 		m_aggregate->release();
@@ -108,7 +134,16 @@ Application::queryInterface(const uuid_t riid, void **object)
 		*object = (void *) static_cast<IApplication *>(this);
 		return 0;
 	}
-	return Object::queryInterface(riid, object);
+	return Factory::queryInterface(riid, object);
+}
+
+/* IFactory */
+int __stdcall
+Application::createInstance(IObject *outer, const uuid_t iid, void **object)
+{
+	(void) outer;
+
+	return queryInterface(iid, object);
 }
 
 /* IApplication */

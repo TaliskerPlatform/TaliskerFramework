@@ -13,28 +13,40 @@
  *  limitations under the License.
  */
 
-#ifndef TALISKER_FACTORY_HH_
-# define TALISKER_FACTORY_HH_           1
+#ifndef TALISKER_REGISTRY_HH_
+# define TALISKER_REGISTRY_HH_          1
 
 # include <Talisker/Object.hh>
-# include <Talisker/IFactory.h>
+# include <Talisker/IRegistry.h>
 
 namespace Talisker
 {
-	class Factory: virtual public IFactory, public Object
+	struct FactoryEntry;
+
+	class Registry: virtual public IRegistry, public Object
 	{
 	public:
-		virtual ~Factory();
+		static Registry *sharedRegistry(void);
+	protected:
+		static Registry *m_sharedRegistry;
+	public:
+		virtual ~Registry();
 	
+		virtual __stdcall int unregisterFactory(const uuid_t clsid, IFactory *factory);	
+		virtual __stdcall IFactory *factory(const uuid_t clsid);
+
 		/* IObject */
 		virtual __stdcall int queryInterface(const uuid_t riid, void **object);
 		
-		/* IFactory */
-		virtual __stdcall int createInstance(IObject *outer, const uuid_t iid, void **object);
-		virtual __stdcall int lock(bool lock);
+		/* IRegistry */
+		virtual __stdcall int registerFactory(const uuid_t clsid, IFactory *factory);
 	protected:
-		Factory();
+		FactoryEntry *m_factories;
+		size_t m_fcount;
+		size_t m_fsize;
+
+		Registry();
 	};
 };
 
-#endif /*!TALISKER_FACTORY_HH_*/
+#endif /*!TALISKER_REGISTRY_HH_*/

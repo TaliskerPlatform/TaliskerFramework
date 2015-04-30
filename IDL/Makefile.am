@@ -13,5 +13,5 @@
 ##  limitations under the License.
 
 dist_noinst_DATA = Interfaces.idl \
-	IObject.idl IAllocator.idl IFactory.idl \
+	IObject.idl IAllocator.idl IFactory.idl IRegistry.idl \
 	IApplication.idl IApplicationDelegate.idl IEvent.idl IControl.idl
