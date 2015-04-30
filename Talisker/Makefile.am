@@ -25,6 +25,7 @@ headersdir = $(prefix)/Library/Frameworks/Talisker.framework/Versions/$(VERSION)
 headers_HEADERS = _decl.h \
 	$(idlgenerated) \
 	Object.hh Process.hh DefaultAllocator.hh Thread.hh String.hh URI.hh \
+	Factory.hh \
 	Coordinates.hh Application.hh Control.hh
 
 %.h: $(top_srcdir)/IDL/%.idl
