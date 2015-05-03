@@ -31,7 +31,7 @@ namespace Talisker {
 	class Process: public Object
 	{
 	public:
-		static Process *self();
+		static Process *currentProcess();
 	public:
 		virtual ~Process();
 

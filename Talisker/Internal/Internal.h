@@ -24,4 +24,27 @@
 #  include <Talisker/Internal/XCB/XCB.h>
 # endif
 
+extern void *(*talisker_new_override_)(size_t nbytes);
+extern void (*talisker_delete_override_)(void *ptr);
+
+# ifdef __cplusplus
+extern "C" {
+# endif
+   
+	void talisker_init_thread_pre_(void);
+	void talisker_init_thread_(void);
+	void talisker_init_process_(int argc, char **argv, char **envp);
+	void talisker_init_allocator_(void);
+
+	void talisker_fini_thread_pre_(void);
+	void talisker_fini_thread_(void);
+	void talisker_fini_allocator_(void);
+	void talisker_fini_registry_(void);
+	void talisker_fini_process_(void);
+	void talisker_fini_app_(void);
+
+# ifdef __cplusplus
+};
+# endif
+
 #endif /*!TALISKER_INTERNAL_INTERNAL_H_*/

@@ -27,4 +27,6 @@
 
 # include <Talisker/Talisker.h>
 
+extern Talisker::Internal::XCB::Application *talisker_xcb_curapp_;
+
 #endif /*!P_XCB_HH_*/

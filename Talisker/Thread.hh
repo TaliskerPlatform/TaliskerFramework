@@ -25,6 +25,7 @@ namespace Talisker {
 	{
 	public:
 		static Thread *currentThread(void);
+		static Thread *mainThread(void);
 		static bool currentIsMainThread(void);
 		static void exit(void);
 		static IAllocator *allocator(void);
@@ -38,7 +39,7 @@ namespace Talisker {
 		virtual bool isMainThread(void);
 		virtual bool isSelf(void);
 		virtual bool running(void);
-	protected:		
+	protected:
 		Thread(unsigned long tid);
 
 		bool m_running;

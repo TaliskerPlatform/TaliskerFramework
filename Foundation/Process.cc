@@ -26,12 +26,21 @@ static char **process_argv;
 static char **process_envp;
 static Process *process;
 
-extern "C" void __attribute__((constructor))
-talisker_process_init_(int argc, char **argv, char **envp)
+extern "C" void
+talisker_init_process_(int argc, char **argv, char **envp)
 {
 	process_argc = argc;
 	process_argv = argv;
 	process_envp = envp;
+}
+
+extern "C" void
+talisker_fini_process_(void)
+{
+	if(process)
+	{
+		delete process;
+	}
 }
 
 void
@@ -40,7 +49,7 @@ Talisker::debug(const char *format, ...)
 	va_list ap;
 
 	va_start(ap, format);
-	Process::self()->vdebug(format, ap);
+	Process::currentProcess()->vdebug(format, ap);
 }
 
 void
@@ -49,7 +58,7 @@ Talisker::log(const char *format, ...)
 	va_list ap;
 
 	va_start(ap, format);
-	Process::self()->vlog(format, ap);
+	Process::currentProcess()->vlog(format, ap);
 }
 
 void
@@ -58,7 +67,7 @@ Talisker::notice(const char *format, ...)
 	va_list ap;
 
 	va_start(ap, format);
-	Process::self()->vnotice(format, ap);
+	Process::currentProcess()->vnotice(format, ap);
 }
 
 void
@@ -67,7 +76,7 @@ Talisker::warn(const char *format, ...)
 	va_list ap;
 
 	va_start(ap, format);
-	Process::self()->vwarn(format, ap);
+	Process::currentProcess()->vwarn(format, ap);
 }
 
 void
@@ -76,13 +85,14 @@ Talisker::err(const char *format, ...)
 	va_list ap;
 
 	va_start(ap, format);
-	Process::self()->verr(format, ap);
+	Process::currentProcess()->verr(format, ap);
 }
 
 Process *
-Process::self(void)
+Process::currentProcess(void)
 {
 	const char *t;
+	int mask;
 
 	if(!process)
 	{
@@ -99,6 +109,55 @@ Process::self(void)
 			t = process_argv[0];
 		}
 		openlog(t, LOG_NDELAY|LOG_NOWAIT|LOG_PERROR|LOG_PID, LOG_USER);
+		t = getenv("TALISKER_LOGLEVEL");
+		mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) |
+			LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) |
+			LOG_MASK(LOG_WARNING);
+		if(t)
+		{
+			if(!strcmp(t, "emerg"))
+			{
+				mask = LOG_MASK(LOG_EMERG);
+			}
+			else if(!strcmp(t, "alert"))
+			{
+				mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT);
+			}
+			else if(!strcmp(t, "crit"))
+			{
+				mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) |
+					LOG_MASK(LOG_CRIT);
+			}
+			else if(!strcmp(t, "err") || !strcmp(t, "error"))
+			{
+				mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) |
+					LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR);
+			}
+			else if(!strcmp(t, "warn") || !strcmp(t, "warning"))
+			{
+				mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) |
+					LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) |
+					LOG_MASK(LOG_WARNING);
+			}
+			else if(!strcmp(t, "info"))
+			{
+				mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) |
+					LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) |
+					LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_INFO);
+			}
+			else if(!strcmp(t, "debug"))
+			{
+				mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) |
+					LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) |
+					LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_INFO) |
+					LOG_MASK(LOG_DEBUG);
+			}
+			else
+			{
+				Talisker::notice("unknown TALIKSER_LOGLEVEL value '%s'\n", t);
+			}
+		}
+		setlogmask(mask);
 		process->m_argc = process_argc;
 		process->m_argv = process_argv;
 		process->m_envp = process_envp;
@@ -117,6 +176,10 @@ Process::Process():
 
 Process::~Process()
 {
+	if(process == this)
+	{
+		process = NULL;
+	}
 }
 
 void

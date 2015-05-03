@@ -32,7 +32,7 @@ SUBDIRS += . Tools Samples
 
 fwlib_LTLIBRARIES = libTalisker.la
 
-libTalisker_la_SOURCES = stub.c
+libTalisker_la_SOURCES = init.cc
 
 libTalisker_la_LIBADD = Foundation/libTaliskerFoundation.la \
 	UI/libTaliskerUI.la

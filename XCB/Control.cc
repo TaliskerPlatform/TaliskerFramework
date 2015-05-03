@@ -53,7 +53,7 @@ Control::Control(Control *parent):
 	}
 	else
 	{
-		m_display = Application::sharedApplication()->m_display;
+		m_display = talisker_xcb_curapp_->m_display;
 	}
 	m_display->retain();
 	m_rect = Rect(0, 0, 100, 100, m_display->dpi());

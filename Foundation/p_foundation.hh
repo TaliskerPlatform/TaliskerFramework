@@ -35,4 +35,24 @@
 
 # include <Talisker/Talisker.h>
 
+# define BLOCK_SIGNATURE                0xFEEF11F0UL
+
+struct Talisker::FactoryEntry
+{
+	uuid_t clsid;
+	int type;
+	union
+	{
+		IObject *object;
+		IFactory *factory;
+		IRegistryConstructor constructor;
+	};
+};
+
+struct block_head_struct
+{
+	uint32_t signature;
+	size_t size;
+};
+
 #endif /*!P_FOUNDATION_HH_*/

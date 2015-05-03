@@ -32,10 +32,6 @@ namespace Talisker
 			class Application: virtual public IApplication, public Object
 			{
 			public:
-				static Application *sharedApplication();
-			protected:
-				static Application *m_sharedApp;
-			public:
 				Display *m_display;
 
 				Application();

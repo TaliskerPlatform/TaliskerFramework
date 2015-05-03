@@ -31,8 +31,6 @@ namespace Talisker
 	public:
 		static IObject *constructor(void);
 		static Application *sharedApplication(void);
-	protected:
-		static Application *m_sharedApp;
 	public:
 		Application();
 		virtual ~Application();

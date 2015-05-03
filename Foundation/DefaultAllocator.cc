@@ -19,33 +19,31 @@
 
 #include "p_foundation.hh"
 
-#define BLOCK_SIGNATURE                 0xFEEF11F0UL
-
 using namespace Talisker;
 
-static DefaultAllocator defaultAllocator;
+static struct block_head_struct *block_head(void *ptr);
 
-struct block_head_struct
+static DefaultAllocator *def_allocator = NULL;
+
+extern "C" void
+talisker_init_allocator_(void)
 {
-	uint32_t signature;
-	size_t size;
-};
+	def_allocator = new DefaultAllocator();
+}
 
-static struct block_head_struct *
-block_head(void *ptr)
+extern "C" void
+talisker_fini_allocator_(void)
 {
-	unsigned char *cptr;
-
-	cptr = ((unsigned char *) ptr) - sizeof(struct block_head_struct);
-	return (struct block_head_struct *) ((void *) cptr);
+	delete def_allocator;
+	def_allocator = NULL;
 }
 
 /* Return the shared default allocator instance */
 IAllocator *
 DefaultAllocator::defaultAllocator(void)
 {
-	::defaultAllocator.m_refcount = -1;
-	return &::defaultAllocator;
+	def_allocator->m_refcount = -1;
+	return def_allocator;
 }
 
 DefaultAllocator::DefaultAllocator():
@@ -157,4 +155,13 @@ void
 DefaultAllocator::compact(void)
 {
 	/* No-op */
+}
+
+static struct block_head_struct *
+block_head(void *ptr)
+{
+	unsigned char *cptr;
+
+	cptr = ((unsigned char *) ptr) - sizeof(struct block_head_struct);
+	return (struct block_head_struct *) ((void *) cptr);
 }

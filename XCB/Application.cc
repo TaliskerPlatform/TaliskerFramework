@@ -21,18 +21,7 @@
 
 using namespace Talisker::Internal::XCB;
 
-Application *Application::m_sharedApp = NULL;
-
-Application *
-Application::sharedApplication()
-{
-	if(!m_sharedApp)
-	{
-		m_sharedApp = new Application();
-		m_sharedApp->m_process = Process::self();
-	}
-	return m_sharedApp;
-}
+Application *talisker_xcb_curapp_ = NULL;
 
 Application::Application():
 	Object::Object(),
@@ -43,13 +32,15 @@ Application::Application():
 	m_running(0)
 {
 	Talisker::debug("[XCB::Application::Application]\n");
+	m_process = Process::currentProcess();
+	talisker_xcb_curapp_ = this;
 }
 
 Application::~Application()
 {
-	if(this == m_sharedApp)
+	if(this == talisker_xcb_curapp_)
 	{
-		m_sharedApp = NULL;
+		talisker_xcb_curapp_ = NULL;
 	}
 	if(m_process)
 	{

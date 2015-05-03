@@ -26,21 +26,15 @@
 
 using namespace Talisker;
 
-Registry *Registry::m_sharedRegistry = NULL;
+static Registry *registry;
 
 /* TODO: thread safety; allocator */
 
-struct Talisker::FactoryEntry
+extern "C" void
+talisker_fini_registry_(void)
 {
-	uuid_t clsid;
-	int type;
-	union
-	{
-		IObject *object;
-		IFactory *factory;
-		IRegistryConstructor constructor;
-	};
-};
+	delete registry;
+}
 
 IObject *
 Registry::constructor(void)
@@ -54,11 +48,11 @@ Registry::constructor(void)
 Registry *
 Registry::sharedRegistry(void)
 {
-	if(!m_sharedRegistry)
+	if(!registry)
 	{
-		m_sharedRegistry = new Registry();
+		registry = new Registry();
 	}
-	return m_sharedRegistry;
+	return registry;
 }
 
 Registry::Registry():
@@ -73,10 +67,21 @@ Registry::Registry():
 Registry::~Registry()
 {
 	size_t c;
-	
+
+	if(this == registry)
+	{
+		registry = NULL;
+	}
 	for(c = 0; c < m_fcount; c++)
 	{
-		m_factories[c].factory->release();
+		if(m_factories[c].type == FT_OBJECT)
+		{
+			m_factories[c].object->release();
+		}
+		else if(m_factories[c].type == FT_FACTORY)
+		{
+			m_factories[c].factory->release();
+		}
 	}
 	free(m_factories);
 }

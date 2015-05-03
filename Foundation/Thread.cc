@@ -21,15 +21,48 @@
 
 using namespace Talisker;
 
-static pthread_once_t init_control = PTHREAD_ONCE_INIT;
+void *(*talisker_new_override_)(size_t nbytes) = NULL;
+void (*talisker_delete_override_)(void *ptr) = NULL;
+
 static pthread_key_t thread_key;
 static pthread_key_t allocator_key;
+static Thread *mainThread;
 
-static void
-talisker_thread_init(void)
+extern "C" void
+talisker_init_thread_pre_(void)
 {
+	talisker_new_override_ = ::malloc;
+	talisker_delete_override_ = ::free;
 	pthread_key_create(&thread_key, NULL);
 	pthread_key_create(&allocator_key, NULL);
+}
+
+extern "C" void
+talisker_init_thread_(void)
+{
+	if(Thread::currentIsMainThread())
+	{
+		mainThread = Thread::currentThread();
+	}
+	talisker_new_override_ = NULL;
+	talisker_delete_override_ = NULL;
+}
+
+extern "C" void
+talisker_fini_thread_pre_(void)
+{
+	talisker_new_override_ = ::malloc;
+	talisker_delete_override_ = ::free;
+}
+
+extern "C" void
+talisker_fini_thread_(void)
+{
+	if(mainThread)
+	{
+		delete mainThread;
+		mainThread = NULL;
+	}
 }
 
 void *
@@ -37,6 +70,10 @@ operator new(size_t nbytes)
 {
 	IAllocator *allocator;
 
+	if(talisker_new_override_)
+	{
+		return talisker_new_override_(nbytes);
+	}
 	allocator = Thread::allocator();
 	return allocator->alloc(nbytes);
 }
@@ -46,6 +83,11 @@ operator delete(void *ptr)
 {
 	IAllocator *allocator;
 
+	if(talisker_delete_override_)
+	{
+		talisker_delete_override_(ptr);
+		return;
+	}
 	allocator = Thread::allocator();
 	allocator->free(ptr);
 }
@@ -60,7 +102,6 @@ Thread::currentThread(void)
 	void *ptr;
 	Thread *t;
 
-	pthread_once(&init_control, talisker_thread_init);
 	curthread = pthread_self();
 	ptr = pthread_getspecific(thread_key);
 	if(ptr)
@@ -70,6 +111,13 @@ Thread::currentThread(void)
 	t = new Thread((unsigned long) curthread);
 	pthread_setspecific(thread_key, (void *) t);
 	return t;
+}
+
+/* Return a pointer to the main thread */
+Thread *
+Thread::mainThread(void)
+{
+	return ::mainThread;
 }
 
 /* Return true if the current thread is the main thread */
@@ -97,8 +145,6 @@ IAllocator *
 Thread::allocator(void)
 {
 	IAllocator *allocator;
-
-	pthread_once(&init_control, talisker_thread_init);
 
 	allocator = static_cast<IAllocator *>(pthread_getspecific(allocator_key));
 	if(!allocator)
@@ -151,7 +197,6 @@ Thread::start(void)
 	{
 		return;
 	}
-	pthread_once(&init_control, talisker_thread_init);
 	/* TODO */
 }
 

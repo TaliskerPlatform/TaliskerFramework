@@ -21,18 +21,17 @@
 
 using namespace Talisker;
 
-Application *Application::m_sharedApp = NULL;
-
+static Application *app = NULL;
 static Control *test_control;
 
-extern "C" void __attribute__((constructor))
-talisker_application_init_(int argc, char **argv, char **envp)
+extern "C" void
+talisker_fini_app_(void)
 {
-	(void) argc;
-	(void) argv;
-	(void) envp;
-	
-	Registry::sharedRegistry()->registerConstructor(CLSID_Talisker_Application, Application::constructor);
+	if(app)
+	{
+		delete app;
+		app = NULL;
+	}
 }
 
 int
@@ -79,19 +78,20 @@ Application::sharedApplication(void)
 	Talisker::Internal::XCB::Application *aggregate;
 #endif
 
-	if(m_sharedApp)
+	if(app)
 	{
-		return m_sharedApp;
+		return app;
 	}
 #ifdef TALISKER_WITH_XCB
-	aggregate = Talisker::Internal::XCB::Application::sharedApplication();
+	aggregate = new Talisker::Internal::XCB::Application();
 #else
 # error No GUI implementation available
 #endif
-	m_sharedApp = new Application(aggregate);
-	m_sharedApp->m_refcount = -1;
-	aggregate->setOuter(m_sharedApp);
-	return m_sharedApp;
+	app = new Application(aggregate);
+	app->m_refcount = -1;
+	aggregate->setOuter(app);
+	aggregate->release();
+	return app;
 }
 
 Application::Application():
@@ -109,6 +109,10 @@ Application::Application(IApplication *aggregate):
 
 Application::~Application()
 {
+	if(app == this)
+	{
+		app = NULL;
+	}
 	if(m_aggregate)
 	{
 		m_aggregate->release();
