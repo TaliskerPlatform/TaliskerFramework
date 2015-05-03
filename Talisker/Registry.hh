@@ -26,26 +26,34 @@ namespace Talisker
 	class Registry: virtual public IRegistry, public Object
 	{
 	public:
+		static IObject *constructor(void);
 		static Registry *sharedRegistry(void);
 	protected:
 		static Registry *m_sharedRegistry;
 	public:
-		virtual ~Registry();
-	
-		virtual __stdcall int unregisterFactory(const uuid_t clsid, IFactory *factory);	
-		virtual __stdcall IFactory *factory(const uuid_t clsid);
+		virtual ~Registry();   
 
 		/* IObject */
-		virtual __stdcall int queryInterface(const uuid_t riid, void **object);
+		virtual int __stdcall queryInterface(const uuid_t riid, void **object);
 		
 		/* IRegistry */
-		virtual __stdcall int registerFactory(const uuid_t clsid, IFactory *factory);
+		virtual int __stdcall registerFactory(const uuid_t clsid, IObject *factory);
+		virtual int __stdcall unregisterFactory(const uuid_t clsid, IObject *factory);
+		virtual int __stdcall classObject(const uuid_t clsid, const uuid_t iid, void **factory);
+		virtual int __stdcall construct(const uuid_t clsid, const uuid_t iid, void **object);
+		virtual IFactory *__stdcall factory(const uuid_t clsid);
+		virtual int __stdcall registerConstructor(const uuid_t clsid, IRegistryConstructor constructor);
+		virtual int __stdcall unregisterConstructor(const uuid_t clsid, IRegistryConstructor constructor);
 	protected:
 		FactoryEntry *m_factories;
 		size_t m_fcount;
 		size_t m_fsize;
 
 		Registry();
+
+		FactoryEntry *addCreateEntry(const uuid_t clsid);
+		FactoryEntry *locateEntry(const uuid_t clsid);
+		int removeEntry(FactoryEntry *p);
 	};
 };
 

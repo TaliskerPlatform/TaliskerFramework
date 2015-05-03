@@ -26,9 +26,10 @@ namespace Talisker
 
 	int ApplicationMain(int argc, char **argv);
 
-	class Application: virtual public IApplication, virtual public IApplicationDelegate, public Factory
+	class Application: virtual public IApplication, virtual public IApplicationDelegate, public Object
 	{
 	public:
+		static IObject *constructor(void);
 		static Application *sharedApplication(void);
 	protected:
 		static Application *m_sharedApp;
@@ -39,9 +40,6 @@ namespace Talisker
 		/* IObject */
 		virtual int __stdcall queryInterface(const uuid_t riid, void **object);
 		
-		/* IFactory */
-		virtual int __stdcall createInstance(IObject *outer, const uuid_t iid, void **object);
-
 		/* IApplication */
 		virtual IApplicationDelegate *__stdcall delegate(void);
 		virtual void __stdcall setDelegate(IApplicationDelegate *delegate);

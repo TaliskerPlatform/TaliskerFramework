@@ -28,19 +28,16 @@ static Control *test_control;
 extern "C" void __attribute__((constructor))
 talisker_application_init_(int argc, char **argv, char **envp)
 {
-	Application *app;
-
 	(void) argc;
 	(void) argv;
 	(void) envp;
 	
-	app = Application::sharedApplication();
+	Registry::sharedRegistry()->registerConstructor(CLSID_Talisker_Application, Application::constructor);
 }
 
 int
 Talisker::ApplicationMain(int argc, char **argv)
 {
-	IFactory *factory;
 	IApplication *app;
 	Thread *thread;
 
@@ -59,29 +56,24 @@ Talisker::ApplicationMain(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	/* TODO: allow application class to be overridden */
-	factory = Registry::sharedRegistry()->factory(CLSID_Talisker_Application);
-	if(!factory)
+	if(Registry::sharedRegistry()->construct(CLSID_Talisker_Application, IID_IApplication, (void **) &app))
 	{
-		UUID uu(CLSID_Talisker_Application);
-		String *s = uu.string();
-		Talisker::err("failed to obtain factory for {%s}\n", s->c_str());
-		s->release();
+		Talisker::err("Application factory failed to construct an IApplication instance\n");
 		return 1;
 	}
-	if(factory->createInstance(NULL, IID_IApplication, (void **) &app))
-	{
-		factory->release();
-		Talisker::err("Application factory failed to provide an IApplication instance\n");
-		return 1;
-	}
-	factory->release();
 	/* TODO: now the application has been initialised, load UI resources */
 	app->run();
 	return 0;
 }
 
+IObject *
+Application::constructor(void)
+{
+	return sharedApplication();
+}
+
 Application *
-Application::sharedApplication()
+Application::sharedApplication(void)
 {
 #ifdef TALISKER_WITH_XCB
 	Talisker::Internal::XCB::Application *aggregate;
@@ -103,22 +95,20 @@ Application::sharedApplication()
 }
 
 Application::Application():
-	Factory::Factory(),
+	Object::Object(),
 	m_aggregate(NULL)
 {
 }
 
 Application::Application(IApplication *aggregate):
-	Factory::Factory(),
+	Object::Object(),
 	m_aggregate(aggregate)
 {
 	m_aggregate->retain();
-	Registry::sharedRegistry()->registerFactory(CLSID_Talisker_Application, this);
 }
 
 Application::~Application()
 {
-	Registry::sharedRegistry()->unregisterFactory(CLSID_Talisker_Application, this);
 	if(m_aggregate)
 	{
 		m_aggregate->release();
@@ -137,16 +127,7 @@ Application::queryInterface(const uuid_t riid, void **object)
 		*object = (void *) obj;	  
 		return 0;
 	}
-	return Factory::queryInterface(riid, object);
-}
-
-/* IFactory */
-int __stdcall
-Application::createInstance(IObject *outer, const uuid_t iid, void **object)
-{
-	(void) outer;
-
-	return queryInterface(iid, object);
+	return Object::queryInterface(riid, object);
 }
 
 /* IApplication */

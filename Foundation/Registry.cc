@@ -19,6 +19,11 @@
 
 #include "p_foundation.hh"
 
+#define FT_NONE                         0
+#define FT_OBJECT                       1
+#define FT_FACTORY                      2
+#define FT_CONSTRUCTOR                  3
+
 using namespace Talisker;
 
 Registry *Registry::m_sharedRegistry = NULL;
@@ -28,8 +33,23 @@ Registry *Registry::m_sharedRegistry = NULL;
 struct Talisker::FactoryEntry
 {
 	uuid_t clsid;
-	IFactory *factory;
+	int type;
+	union
+	{
+		IObject *object;
+		IFactory *factory;
+		IRegistryConstructor constructor;
+	};
 };
+
+IObject *
+Registry::constructor(void)
+{
+	Registry *inst;
+   
+	inst = Registry::sharedRegistry();
+	return static_cast<IObject *>(inst);
+}
 
 Registry *
 Registry::sharedRegistry(void)
@@ -66,77 +86,97 @@ Registry::queryInterface(const uuid_t riid, void **object)
 {
 	if(!uuid_compare(riid, IID_IRegistry))
 	{
-		*object = static_cast<IRegistry *>(this);
+		IRegistry *obj = static_cast<IRegistry *>(this);
+		
+		obj->retain();
+		*object = obj;
 		return 0;
 	}
 	return Object::queryInterface(riid, object);
 }
 
 int __stdcall
-Registry::registerFactory(const uuid_t clsid, IFactory *factory)
+Registry::registerFactory(const uuid_t clsid, IObject *object)
 {
-	size_t c;
 	UUID uu(clsid);
 	String *s;
 	FactoryEntry *p;
+	IFactory *factory;
 
-	for(c = 0; c < m_fcount; c++)
+	if(!(p = addCreateEntry(clsid)))
 	{
-		if(!uuid_compare(m_factories[c].clsid, clsid))
-		{
-			s = uu.string();
-			Talisker::notice("Registry: ignored attempt to register a factory for {%s} more than once\n", s->c_str());
-			s->release();
-			return -1;
-		}
+		return -1;
 	}
-	if(m_fcount + 1 > m_fsize)
+	if(p->type != FT_NONE)
 	{
-		p = (FactoryEntry *) realloc(m_factories, sizeof(FactoryEntry) * (m_fsize + 8));
-		if(!p)
-		{
-			return -1;
-		}
-		m_factories = p;
-		m_fsize += 8;
+		s = uu.string();
+		Talisker::notice("Registry: ignored attempt to register a factory for {%s} more than once\n", s->c_str());
+		s->release();
+		return -1;
 	}
-	factory->retain();
-	memcpy(m_factories[m_fcount].clsid, clsid, sizeof(uuid_t));
-	m_factories[m_fcount].factory = factory;
-	m_fcount++;
+	if(object->queryInterface(IID_IFactory, (void **) &factory))
+	{
+		Talisker::debug("Registry: new factory doesn't support IFactory\n");
+		/* The factory doesn't support IFactory */
+		p->type = FT_OBJECT;
+		p->object = object;
+		object->retain();
+		return 0;
+	}
+	Talisker::debug("Registry: registered an IFactory factory\n");
+	p->type = FT_FACTORY;
+	p->factory = factory;
+	/* No need to explicitly retain, as queryInterface does it for us */
 	return 0;
 }
 
 int __stdcall
-Registry::unregisterFactory(const uuid_t clsid, IFactory *factory)
+Registry::unregisterFactory(const uuid_t clsid, IObject *object)
 {
-	size_t c;
-	UUID uu(clsid);
-	String *s;
-	
-	for(c = 0; c < m_fcount; c++)
+	FactoryEntry *p;
+
+	p = locateEntry(clsid);
+	if(!p)
 	{
-		if(!uuid_compare(m_factories[c].clsid, clsid))
+		Talisker::notice("Registry: ignored attempt to unregister a factory for a class which is not registered\n");
+		return -1;
+	}
+	if(p->type != FT_OBJECT && p->type != FT_FACTORY)
+	{
+		Talisker::notice("Registry: ignored attempt to unregister a factory for a class with a different kind of factory\n");
+		return -1;
+	}
+	if(p->type == FT_FACTORY)
+	{
+		if(p->object != object)
 		{
-			if(m_factories[c].factory != factory)
+			IFactory *factory;
+
+			if(object->queryInterface(IID_IFactory, (void **) &factory))
 			{
-				s = uu.string();
-				Talisker::notice("Registry: ignored attempt to unregister a factory for {%s} which was registered with a different factory\n", s->c_str());
-				s->release();
+				Talisker::notice("Registry: ignored attempt to unregister a factory for a class registered with a different factory\n");
 				return -1;
 			}
-			m_factories[c].factory->release();
-			if(c + 1 < m_fcount)
+			if(factory != p->factory)
 			{
-				memmove(&(m_factories[c]), &(m_factories[c + 1]), sizeof(FactoryEntry) * (m_fcount - c - 1));
+				Talisker::notice("Registry: ignored attempt to unregister a factory for a class registered with a different factory\n");
+				factory->release();
+				return -1;
 			}
-			return 0;
+			factory->release();
+			p->factory->release();
 		}
 	}
-	s = uu.string();
-	Talisker::notice("Registry: ignored attempt to unregister a factory for {%s} which is not registered\n", s->c_str());
-	s->release();
-	return -1;
+	else
+	{
+		if(p->object != object)
+		{
+			Talisker::notice("Registry: ignored attempt to unregister a factory for a class registered with a different factory\n");
+			return -1;
+		}
+		p->object->release();
+	}
+	return removeEntry(p);
 }
 
 IFactory *__stdcall
@@ -148,9 +188,204 @@ Registry::factory(const uuid_t clsid)
 	{
 		if(!uuid_compare(m_factories[c].clsid, clsid))
 		{
+			if(m_factories[c].type != FT_FACTORY)
+			{
+				return NULL;
+			}
 			m_factories[c].factory->retain();
 			return m_factories[c].factory;
 		}
 	}
 	return NULL;
+}
+
+int __stdcall
+Registry::classObject(const uuid_t clsid, const uuid_t iid, void **factory)
+{
+	FactoryEntry *p;
+
+	p = locateEntry(clsid);
+	if(!p)
+	{
+		return -1;
+	}
+	if(p->type == FT_NONE || p->type == FT_CONSTRUCTOR)
+	{
+		return -1;
+	}
+	if(!uuid_compare(iid, IID_IObject) ||
+	   (p->type == FT_FACTORY && !uuid_compare(iid, IID_IFactory)))
+	{
+		p->object->retain();
+		*factory = p->object;
+		return 0;
+	}
+	return p->object->queryInterface(iid, factory);
+}
+
+int __stdcall
+Registry::construct(const uuid_t clsid, const uuid_t iid, void **object)
+{
+	FactoryEntry *p;
+
+	p = locateEntry(clsid);
+	if(!p)
+	{
+		Talisker::debug("Registry: cannot construct an instance for a class with no registered factory or constructor\n");
+		return -1;
+	}
+	if(p->type == FT_NONE)
+	{
+		Talisker::debug("Registry: ignoring attempt to construct an instance of a class with no factory type\n");
+		return -1;
+	}
+	if(p->type == FT_OBJECT)
+	{
+		/* Can't construct using a factory which doesn't support IFactory */
+		Talisker::debug("Registry: cannot construct an instance for a class whose factory doesn't support IFactory\n");
+		return -1;
+	}
+	if(p->type == FT_FACTORY)
+	{
+		Talisker::debug("Registry: invoking IFactory::createInstance()\n");
+		return p->factory->createInstance(NULL, iid, object);
+	}
+	if(p->type == FT_CONSTRUCTOR)
+	{
+		IObject *inst;
+		int r;
+
+		Talisker::debug("Registry: invoking constructor for class\n");
+		inst = p->constructor();
+		if(!inst)
+		{
+			return -1;
+		}
+		if(uuid_compare(iid, IID_IObject))
+		{
+			r = inst->queryInterface(iid, object);
+			inst->release();
+		}
+		else
+		{
+			*object = inst;
+			r = 0;
+		}
+		return r;
+	}
+	/* Unsupported construction method */
+	return -1;
+}
+
+int __stdcall
+Registry::registerConstructor(const uuid_t clsid, IRegistryConstructor constructor)
+{
+	UUID uu(clsid);
+	String *s;
+	FactoryEntry *p;
+
+	if(!(p = addCreateEntry(clsid)))
+	{
+		return -1;
+	}
+	if(p->type != FT_NONE)
+	{
+		s = uu.string();
+		Talisker::notice("Registry: ignored attempt to register a constructor for {%s} which already has a registration\n", s->c_str());
+		s->release();
+		return -1;
+	}
+	p->type = FT_CONSTRUCTOR;
+	p->constructor = constructor;
+	return 0;
+}
+
+int __stdcall
+Registry::unregisterConstructor(const uuid_t clsid, IRegistryConstructor constructor)
+{
+	FactoryEntry *p;
+
+	p = locateEntry(clsid);
+	if(!p)
+	{
+		Talisker::notice("Registry: ignored attempt to unregister a constructor for a class which is not registered\n");
+		return -1;
+	}
+	if(p->type != FT_CONSTRUCTOR)
+	{
+		Talisker::notice("Registry: ignored attempt to unregister a constructor for a class with a different kind of factory\n");
+		return -1;
+	}
+	if(p->constructor != constructor)
+	{
+		Talisker::notice("Registry: ignored attempt to unregister a constructor for a class with a different registered constructor\n");
+		return -1;
+	}
+	return removeEntry(p);
+}
+
+FactoryEntry *
+Registry::addCreateEntry(const uuid_t clsid)
+{
+	size_t c;
+	FactoryEntry *p;
+
+	for(c = 0; c < m_fcount; c++)
+	{
+		if(!uuid_compare(m_factories[c].clsid, clsid))
+		{
+			return &(m_factories[c]);
+		}
+	}
+	if(m_fcount + 1 > m_fsize)
+	{
+		p = (FactoryEntry *) realloc(m_factories, sizeof(FactoryEntry) * (m_fsize + 8));
+		if(!p)
+		{
+			return NULL;
+		}
+		m_factories = p;
+		m_fsize += 8;
+	}
+	p = &(m_factories[m_fcount]);
+	m_fcount++;
+	memset(p, 0, sizeof(FactoryEntry));
+	memcpy(p->clsid, clsid, sizeof(uuid_t));
+	return p;
+}
+
+FactoryEntry *
+Registry::locateEntry(const uuid_t clsid)
+{
+	size_t c;
+
+	for(c = 0; c < m_fcount; c++)
+	{
+		if(!uuid_compare(m_factories[c].clsid, clsid))
+		{
+			return &(m_factories[c]);
+		}
+	}
+	return NULL;
+}
+
+int
+Registry::removeEntry(FactoryEntry *p)
+{
+	size_t c;
+	
+	for(c = 0; c < m_fcount; c++)
+	{
+		if(p == &(m_factories[c]))
+		{
+			if(c + 1 < m_fcount)
+			{
+				memmove(&(m_factories[c]), &(m_factories[c + 1]), sizeof(FactoryEntry) * (m_fcount - c - 1));
+			}			
+			m_fcount--;
+			return 0;
+		}
+	}
+	Talisker::err("Registry: Internal: failed to remove registry entry because the pointer was out of range\n");
+	return -1;
 }

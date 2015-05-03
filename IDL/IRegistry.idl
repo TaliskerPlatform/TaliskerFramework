@@ -16,12 +16,26 @@ cpp_quote(" */");
 import "IFactory.idl";
 
 [
-	local,
 	object,
 	uuid(53f81d3a-1179-4484-b2b1-41365dd52eea),
 	cheader("Talisker/IRegistry.h")
 ]
 interface IRegistry: IObject
 {
-	int registerFactory(const uuid_t clsid, IFactory *factory);
+	typedef IObject *(*IRegistryConstructor)(void);
+
+	/* Register a factory instance for a class */
+	int registerFactory(const uuid_t clsid, IObject *factory);	
+	/* Unregister a factory instance for a class */
+	int unregisterFactory(const uuid_t clsid, IObject *factory);	
+	/* Obtain a factory for a class */
+	int classObject(const uuid_t clsid, const uuid_t iid, void **factory);
+	/* Directly construct an instance using a constructor or IFactory */
+	int construct(const uuid_t clsid, const uuid_t iid, void **object);
+	/* Obtain a factory for a class, provided it implements IFactory */
+	[local] IFactory *factory(const uuid_t clsid);
+	/* Register a local constructor for a class */
+	[local] int registerConstructor(const uuid_t clsid, IRegistryConstructor constructor);
+	/* Unregister a local constructor for a class */
+	[local] int unregisterConstructor(const uuid_t clsid, IRegistryConstructor constructor);
 }
