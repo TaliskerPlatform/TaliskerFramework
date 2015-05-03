@@ -51,7 +51,10 @@ Event::queryInterface(const uuid_t riid, void **object)
 {
 	if(!uuid_compare(riid, IID_IEvent))
 	{
-		*object = (void *) static_cast<IEvent *>(this);
+		IEvent *obj = static_cast<IEvent *>(this);
+
+		obj->retain();
+		*object = (void *) obj;
 		return 0;
 	}
 	return Object::queryInterface(riid, object);

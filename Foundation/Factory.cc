@@ -35,7 +35,10 @@ Factory::queryInterface(const uuid_t iid, void **object)
 {
 	if(!uuid_compare(iid, IID_IFactory))
 	{
-		*object = static_cast<IFactory *>(this);
+		IFactory *obj = static_cast<IFactory *>(this);
+
+		obj->retain();
+		*object = obj;
 		return 0;
 	}
 	return Object::queryInterface(iid, object);

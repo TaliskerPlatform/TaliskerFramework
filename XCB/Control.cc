@@ -131,7 +131,10 @@ Control::queryInterface(const uuid_t riid, void **object)
 {
 	if(!uuid_compare(riid, IID_IControl))
 	{
-		*object = (void *) static_cast<IControl *>(this);
+		IControl *obj = static_cast<IControl *>(this);
+
+		obj->retain();
+		*object = (void *) obj;
 		return 0;
 	}
 	return Object::queryInterface(riid, object);

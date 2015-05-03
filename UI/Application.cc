@@ -131,7 +131,10 @@ Application::queryInterface(const uuid_t riid, void **object)
 {
 	if(!uuid_compare(riid, IID_IApplication))
 	{
-		*object = (void *) static_cast<IApplication *>(this);
+		IApplication *obj = static_cast<IApplication *>(this);
+		
+		obj->retain();
+		*object = (void *) obj;	  
 		return 0;
 	}
 	return Factory::queryInterface(riid, object);

@@ -39,7 +39,10 @@ Object::queryInterface(const uuid_t riid, void **object)
 {
 	if(!uuid_compare(riid, IID_IObject))
 	{
-		*object = static_cast<void *>(this);
+		IObject *obj = static_cast<IObject *>(this);
+
+		obj->retain();
+		*object = obj;
 		return 0;
 	}
 	return -1;
