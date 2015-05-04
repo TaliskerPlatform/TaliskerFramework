@@ -25,15 +25,17 @@ using namespace Talisker;
 
 /* TODO: use allocator */
 
-String::String()
+String::String():
+	Object::Object(),
+	m_len(0)
 {
-	m_len = 0;
 	m_size = SIZE(m_len);
 	m_buf = (unsigned char *) malloc(m_size);
 	m_buf[m_len] = 0;
 }
 
-String::String(const char *cstr)
+String::String(const char *cstr):
+	Object::Object()
 {
 	if(!cstr)
 	{
@@ -46,7 +48,8 @@ String::String(const char *cstr)
 	m_buf[m_len] = 0;
 }
 
-String::String(const String *str)
+String::String(const String *str):
+	Object::Object()
 {
 	m_len = str->m_len;
 	m_size = SIZE(m_len);
