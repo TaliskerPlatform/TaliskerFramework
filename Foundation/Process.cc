@@ -139,18 +139,25 @@ Process::currentProcess(void)
 					LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) |
 					LOG_MASK(LOG_WARNING);
 			}
+			else if(!strcmp(t, "notice"))
+			{
+				mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) |
+					LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) |
+					LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE);
+			}
 			else if(!strcmp(t, "info"))
 			{
 				mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) |
 					LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) |
-					LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_INFO);
+					LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE) |
+					LOG_MASK(LOG_INFO);
 			}
 			else if(!strcmp(t, "debug"))
 			{
 				mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) |
 					LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) |
-					LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_INFO) |
-					LOG_MASK(LOG_DEBUG);
+					LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE) |
+					LOG_MASK(LOG_INFO) | LOG_MASK(LOG_DEBUG);
 			}
 			else
 			{
