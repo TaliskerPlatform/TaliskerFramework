@@ -17,6 +17,7 @@
 # define P_FOUNDATION_HH_              1
 
 # define TALISKER_INTERNAL_            1
+# define TALISKER_INTERNAL_FOUNDATION_ 1
 # define _BSD_SOURCE
 
 # include <stdio.h>
@@ -33,7 +34,15 @@
 # include <uuid/uuid.h>
 # include <Uri.h>
 
+namespace Talisker {
+
+# define UT_array ArrayPrivate
+# include <utarray.h>
+
+};
+
 # include <Talisker/Talisker.h>
+
 
 # define BLOCK_SIGNATURE                0xFEEF11F0UL
 

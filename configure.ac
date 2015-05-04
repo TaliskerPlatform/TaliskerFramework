@@ -35,7 +35,7 @@ LT_INIT
 
 AM_CPPFLAGS="-I\${top_builddir} -I\${top_srcdir}"
 AM_CPPFLAGS="$AM_CPPFLAGS -I\${top_builddir}/uriparser/include/uriparser -I\${top_srcdir}/uriparser/include/uriparser"
-
+AM_CPPFLAGS="$AM_CPPFLAGS -I\${top_builddir}/uthash/src -I\${top_srcdir}/uthash/src"
 AC_SUBST([AM_CPPFLAGS])
 
 if test x"$GCC" = x"yes" ; then

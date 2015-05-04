@@ -40,6 +40,8 @@
 #  include <Talisker/URI.hh>
 #  include <Talisker/UUID.hh>
 #  include <Talisker/Registry.hh>
+#  include <Talisker/Array.hh>
+#  include <Talisker/Dictionary.hh>
 
 /* UI */
 #  include <Talisker/Coordinates.hh>

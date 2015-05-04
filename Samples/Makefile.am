@@ -14,7 +14,10 @@
 
 SUBDIRS = HelloApp
 
-noinst_PROGRAMS = string
+noinst_PROGRAMS = string array
 
 string_SOURCES = string.cc
 string_LDADD = $(top_builddir)/libTalisker.la
+
+array_SOURCES = array.cc
+array_LDADD = $(top_builddir)/libTalisker.la
