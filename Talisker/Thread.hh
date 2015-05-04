@@ -17,6 +17,7 @@
 # define TALISKER_THREAD_HH_            1
 
 # include <Talisker/Object.hh>
+# include <Talisker/String.hh>
 # include <Talisker/IAllocator.h>
 
 namespace Talisker {
@@ -36,16 +37,23 @@ namespace Talisker {
 
 		virtual void start(void);
 		virtual void main(void);
+		virtual void cancel(void);
 		virtual bool isMainThread(void);
 		virtual bool isSelf(void);
-		virtual bool running(void);
+		virtual bool executing(void);
+		virtual bool finished(void);
+		virtual bool cancelled(void);
+		virtual String *name(void);
 	protected:
 		Thread(unsigned long tid);
 
 		bool m_running;
+		bool m_cancelled;
+		bool m_finished;
 		unsigned long m_id;
 		bool m_isMainThread;
 		IAllocator *m_allocator;
+		String *m_name;
 	};
 
 };

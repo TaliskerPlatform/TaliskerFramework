@@ -159,9 +159,12 @@ Thread::allocator(void)
 Thread::Thread():
 	Object::Object(),
 	m_running(false),
+	m_cancelled(false),
+	m_finished(false),
 	m_id(0),
 	m_isMainThread(false),
-	m_allocator(NULL)
+	m_allocator(NULL),
+	m_name(NULL)
 {
 }
 
@@ -169,17 +172,28 @@ Thread::Thread():
 Thread::Thread(IAllocator *threadAllocator):
 	Object::Object(),
 	m_running(false),
+	m_cancelled(false),
+	m_finished(false),
 	m_id(0),
 	m_isMainThread(false),
-	m_allocator(threadAllocator)
+	m_allocator(threadAllocator),
+	m_name(NULL)
 {
+	if(m_allocator)
+	{
+		m_allocator->retain();
+	}
 }
 
 /* Internal: Create a new thread object for an existing thread */
 Thread::Thread(unsigned long tid):
 	Object::Object(),
 	m_running(true),
-	m_id(tid)
+	m_cancelled(false),
+	m_finished(false),
+	m_id(tid),
+	m_allocator(NULL),
+	m_name(NULL)
 {
 	m_isMainThread = currentIsMainThread();
 }
@@ -187,6 +201,11 @@ Thread::Thread(unsigned long tid):
 /* Thread object destructor */
 Thread::~Thread()
 {
+	if(m_allocator)
+	{
+		m_allocator->release();
+	}
+	delete m_name;
 }
 
 /* Start running a new thread */
@@ -198,6 +217,13 @@ Thread::start(void)
 		return;
 	}
 	/* TODO */
+}
+
+void
+Thread::cancel(void)
+{
+	/* TODO: mutex */
+	m_cancelled = true;
 }
 
 /* The implementation of a thread, invoked when the thread is started */
@@ -223,8 +249,43 @@ Thread::isSelf(void)
 
 /* Determine whether this thread is running */
 bool
-Thread::running(void)
+Thread::executing(void)
 {
 	return m_running;
 }
 
+bool
+Thread::finished(void)
+{
+	return m_finished;
+}
+
+bool
+Thread::cancelled(void)
+{
+	return m_cancelled;
+}
+
+String *
+Thread::name(void)
+{
+	if(!m_name)
+	{		
+		if(m_isMainThread)
+		{
+			m_name = new String("Main thread");
+		}
+		else if(m_id)
+		{
+			char buf[64];
+			
+			snprintf(buf, sizeof(buf) - 1, "%lu", m_id);
+			m_name = new String(buf);
+		}
+		else
+		{
+			m_name = new String("(New thread)");
+		}
+	}
+	return m_name;
+}
