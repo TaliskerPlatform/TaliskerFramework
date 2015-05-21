@@ -57,6 +57,7 @@ AC_SUBST([gui_backend])
 AM_CONDITIONAL([WITH_XCB],[test x"$gui_backend" = x"xcb"])
 if test x"$gui_backend" = x"xcb" ; then
 	AC_DEFINE_UNQUOTED([TALISKER_WITH_XCB],[1],[Set if building with the XCB GUI back-end])
+	AM_CPPFLAGS="$AM_CPPFLAGS $XCB_CFLAGS"
 else
 	AC_MSG_ERROR([no suitable GUI back-end could be determined])
 fi

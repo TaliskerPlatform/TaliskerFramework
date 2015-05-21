@@ -12,8 +12,6 @@
 ##  See the License for the specific language governing permissions and
 ##  limitations under the License.
 
-AM_CPPFLAGS = @AM_CPPFLAGS@ @XCB_CFLAGS@
-
 if WITH_XCB
 
 noinst_LTLIBRARIES = libTaliskerXCB.la
