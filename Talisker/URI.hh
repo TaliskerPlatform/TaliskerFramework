@@ -18,17 +18,19 @@
 
 # include <Talisker/Object.hh>
 
-typedef struct UriUriStructA TaliskerUriPrivate_;
-
 namespace Talisker
 {
-	class URI: public Object
+#ifndef TALISKER_INTERNAL_FOUNDATION_
+	struct URIPrivate;
+#endif
+
+	class TALISKER_EXPORT_ URI: public Object
 	{
 	public:
 		URI(const char *uri);
 		virtual ~URI();
 	protected:
-		struct ::UriUriStructA *m_uri;
+		URIPrivate *m_uri;
 	};
 };
 

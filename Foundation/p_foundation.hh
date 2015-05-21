@@ -32,17 +32,18 @@
 # endif
 # include <dlfcn.h>
 # include <uuid/uuid.h>
-# include <Uri.h>
 
 namespace Talisker {
 
 # define UT_array ArrayPrivate
 # include <utarray.h>
 
+# define UriUriStructA URIPrivate
+# include <Uri.h>
+
 };
 
 # include <Talisker/Talisker.h>
-
 
 # define BLOCK_SIGNATURE                0xFEEF11F0UL
 
