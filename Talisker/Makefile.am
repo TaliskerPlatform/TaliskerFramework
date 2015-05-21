@@ -15,7 +15,7 @@
 SUBDIRS = Internal
 
 idlgenerated = Interfaces.h \
-	IObject.h IAllocator.h IFactory.h IRegistry.h \
+	IObject.h IAllocator.h IFactory.h IRegistry.h IArray.h IDictionary.h IString.h \
 	IApplication.h IApplicationDelegate.h IEvent.h IControl.h
 
 CLEANFILES = $(idlgenerated)

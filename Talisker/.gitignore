@@ -8,3 +8,6 @@
 /Interfaces.h
 /IObject.h
 /IRegistry.h
+/IArray.h
+/IDictionary.h
+/IString.h
