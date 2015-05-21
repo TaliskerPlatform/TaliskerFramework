@@ -20,6 +20,7 @@
 # define TALISKER_INTERNAL_FOUNDATION_ 1
 # define _BSD_SOURCE
 
+# include <stddef.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <stdarg.h>
@@ -41,7 +42,11 @@ namespace Talisker {
 # define UriUriStructA URIPrivate
 # include <Uri.h>
 
+struct DictionaryPrivate;
+
 };
+
+# include <uthash.h>
 
 # include <Talisker/Talisker.h>
 
@@ -64,5 +69,13 @@ struct block_head_struct
 	uint32_t signature;
 	size_t size;
 };
+
+struct Talisker::DictionaryPrivate
+{
+	char *key;
+	IObject *value;
+	UT_hash_handle hh;
+};
+
 
 #endif /*!P_FOUNDATION_HH_*/

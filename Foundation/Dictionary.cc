@@ -20,3 +20,95 @@
 #include "p_foundation.hh"
 
 using namespace Talisker;
+
+Dictionary::Dictionary():
+	Object::Object(),
+	m_dict(NULL)
+{
+}
+
+Dictionary::~Dictionary()
+{
+	DictionaryPrivate *cur, *tmp;
+
+	HASH_ITER(hh, m_dict, cur, tmp)
+	{
+		HASH_DEL(m_dict, cur);
+		free(cur->key);
+		cur->value->release();
+	}
+}
+
+IObject *
+Dictionary::valueForKey(const char *key)
+{
+	DictionaryPrivate *item;
+	
+	HASH_FIND_STR(m_dict, key, item);
+	if(!item)
+	{
+		return NULL;
+	}
+	item->value->retain();
+	return item->value;
+}
+
+IObject *
+Dictionary::valueForKey(const String &str)
+{
+	return valueForKey(str.c_str());
+}
+
+void
+Dictionary::setObject(const char *key, IObject *value)
+{
+	DictionaryPrivate *item;
+
+	HASH_FIND_STR(m_dict, key, item);
+	if(item)
+	{
+		if(item->value == value)
+		{
+			return;
+		}
+		item->value->release();
+		item->value = value;
+		value->retain();
+		return;
+	}
+	item = new DictionaryPrivate;
+	item->key = strdup(key);
+	item->value = value;
+	HASH_ADD_KEYPTR(hh, m_dict, item->key, strlen(item->key), item);
+	value->retain();
+}
+
+void
+Dictionary::setObject(const String &str, IObject *value)
+{
+	setObject(str.c_str(), value);
+}
+
+/* IDictionary */
+
+size_t
+Dictionary::count(void)
+{
+	return HASH_COUNT(m_dict);
+}
+
+/*
+IObject *
+Dictionary::valueForKey(IString *key)
+{
+	return valueForKey(key->c_str());
+}
+*/
+
+/*
+void
+Dictionary::setObject(IString *key, IObject *value)
+{
+	setObject(str->c_str(), value);
+}
+*/

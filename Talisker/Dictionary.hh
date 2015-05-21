@@ -18,8 +18,27 @@
 
 namespace Talisker
 {
-	class Dictionary: public Object
+#ifndef TALISKER_INTERNAL_FOUNDATION_
+	struct DictionaryPrivate;
+#endif
+
+	class TALISKER_EXPORT_ Dictionary: public Object
 	{
+	public:
+		Dictionary();
+		virtual ~Dictionary();
+
+		virtual IObject *valueForKey(const String &key);
+		virtual IObject *valueForKey(const char *key);
+		virtual void setObject(const char *key, IObject *object);
+		virtual void setObject(const String &key, IObject *object);
+
+		virtual size_t count(void);
+/*		virtual IObject *valueForKey(IString *key); */
+
+/*		virtual void setObject(IString *key, IObject *object); */
+	protected:
+		DictionaryPrivate *m_dict;
 	};
 };
 
