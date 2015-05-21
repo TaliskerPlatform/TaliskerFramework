@@ -64,25 +64,25 @@ String::~String()
 }
 
 String *
-String::dup(void)
+String::dup(void) const
 {
 	return new String(this);
 }
 
 const char *
-String::c_str(void)
+String::c_str(void) const
 {
 	return (const char *) m_buf;
 }
 
 const unsigned char *
-String::bytes(void)
+String::bytes(void) const
 {
 	return m_buf;
 }
 
 size_t
-String::length(void)
+String::length(void) const
 {
 	return m_len;
 }

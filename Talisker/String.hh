@@ -50,10 +50,10 @@ namespace Talisker
 		/* IObject */
 
 		/* IString */
-		virtual String *dup(void);
-		virtual const char *c_str(void);
-		virtual const unsigned char *bytes(void);
-		virtual size_t length(void);		
+		virtual String *dup(void) const;
+		virtual const char *c_str(void) const;
+		virtual const unsigned char *bytes(void) const;
+		virtual size_t length(void) const;
 		virtual void assign(const String *str, size_t maxlen = String::endpos);
 		virtual void append(const String *str, size_t maxlen = String::endpos);
 		virtual void remove(size_t start = 0, size_t end = String::endpos);
