@@ -41,7 +41,7 @@ if WITH_XCB
 libTalisker_la_LIBADD += XCB/libTaliskerXCB.la
 endif
 
-libTalisker_la_LIBADD += uriparser/liburiparser.la -luuid
+libTalisker_la_LIBADD += uriparser/liburiparser.la
 
 libTalisker_la_LDFLAGS = -avoid-version
 
