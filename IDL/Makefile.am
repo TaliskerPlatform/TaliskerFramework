@@ -14,4 +14,5 @@
 
 dist_noinst_DATA = Interfaces.idl \
 	IObject.idl IAllocator.idl IFactory.idl IRegistry.idl \
+	IVariant.idl IString.idl IArray.idl IDictionary.idl \
 	IApplication.idl IApplicationDelegate.idl IEvent.idl IControl.idl
