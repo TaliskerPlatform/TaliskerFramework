@@ -74,6 +74,8 @@ AC_CHECK_FUNC([pthread_create],,[
 	])
 ])
 
+AC_CHECK_FUNCS([pthread_main_np])
+
 AC_CHECK_FUNC([dlopen],,[
 	AC_CHECK_LIB([dl],[dlopen],,[
 		AC_MSG_ERROR([cannot locate dynamic loader library (-ldl)])

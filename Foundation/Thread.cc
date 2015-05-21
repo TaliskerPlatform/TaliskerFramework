@@ -124,11 +124,15 @@ Thread::mainThread(void)
 bool
 Thread::currentIsMainThread(void)
 {
-#if defined(__linux__)
+#if defined(HAVE_PTHREAD_MAIN_NP)
+	return pthread_main_np();
+#elif defined(__linux__)
 	if(syscall(SYS_gettid) == getpid())
 	{
 		return true;
 	}
+#else
+# error Unable to determine API to use to detect main thread
 #endif
 	return false;
 }
