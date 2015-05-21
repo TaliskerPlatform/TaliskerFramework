@@ -21,7 +21,7 @@
 
 namespace Talisker
 {
-	class Factory: virtual public IFactory, public Object
+	class TALISKER_EXPORT_ Factory: virtual public IFactory, public Object
 	{
 	public:
 		virtual ~Factory();

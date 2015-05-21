@@ -51,4 +51,19 @@
 	STDMETHOD(int, name)
 # endif /*__cplusplus*/
 
+# undef TALISKER_EXPORT_
+# if defined(_WIN32) || defined(__CYGWIN__)
+#  ifdef TALISKER_INTERNAL_
+#   define TALISKER_EXPORT_             __declspec(dllexport)
+#  else
+#   define TALISKER_EXPORT_             __declspec(dllimport)
+#  endif
+# else /*_WIN32 || __CYGWIN*/
+#  if defined(TALISKER_INTERNAL_) && __GNUC__ >= 4
+#   define TALISKER_EXPORT_             __attribute__((visibility("default")))
+#  else
+#   define TALISKER_EXPORT_
+#  endif
+# endif
+
 #endif /*!TALKISKER__DECL_H_*/

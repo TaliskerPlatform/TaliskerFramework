@@ -21,7 +21,7 @@
 
 namespace Talisker
 {
-	class Control: virtual public IControl, public Object
+	class TALISKER_EXPORT_ Control: virtual public IControl, public Object
 	{
 	public:
 		Control(Control *parent = NULL);

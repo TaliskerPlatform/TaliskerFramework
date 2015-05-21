@@ -21,7 +21,7 @@
 
 namespace Talisker
 {
-	class UUID: public Object
+	class TALISKER_EXPORT_ UUID: public Object
 	{
 	public:
 		static const int lower = 0;

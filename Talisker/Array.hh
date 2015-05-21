@@ -22,7 +22,7 @@ namespace Talisker
 	struct ArrayPrivate;
 #endif
 
-	class Array: public Object
+	class TALISKER_EXPORT_ Array: public Object
 	{
 	public:
 		Array();

@@ -20,7 +20,7 @@
 
 namespace Talisker {
 
-	class Object: virtual public IObject
+	class TALISKER_EXPORT_ Object: virtual public IObject
 	{
 	public:
 		Object();

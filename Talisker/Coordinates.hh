@@ -18,7 +18,7 @@
 
 namespace Talisker {
 
-	struct Point
+	struct TALISKER_EXPORT_ Point
 	{
 		float x;
 		float y;
@@ -28,7 +28,7 @@ namespace Talisker {
 		Point(long nx, long ny, int dpi);
 	};
 
-	struct Bounds
+	struct TALISKER_EXPORT_ Bounds
 	{
 		float width;
 		float height;
@@ -38,7 +38,7 @@ namespace Talisker {
 		Bounds(long nx, long ny, int dpi);
 	};
 
-	struct Rect
+	struct TALISKER_EXPORT_ Rect
 	{
 		Point origin;
 		Bounds bounds;

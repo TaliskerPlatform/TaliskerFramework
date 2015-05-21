@@ -21,7 +21,7 @@
 
 namespace Talisker {
 
-	class DefaultAllocator: virtual public IAllocator, public Object
+	class TALISKER_EXPORT_ DefaultAllocator: virtual public IAllocator, public Object
 	{
 	public:
 		static IAllocator *defaultAllocator(void);

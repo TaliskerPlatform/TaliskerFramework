@@ -24,9 +24,9 @@
 namespace Talisker
 {
 
-	int ApplicationMain(int argc, char **argv);
+	int TALISKER_EXPORT_ ApplicationMain(int argc, char **argv);
 
-	class Application: virtual public IApplication, virtual public IApplicationDelegate, public Object
+	class TALISKER_EXPORT_ Application: virtual public IApplication, virtual public IApplicationDelegate, public Object
 	{
 	public:
 		static IObject *constructor(void);

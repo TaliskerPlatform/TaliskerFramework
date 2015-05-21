@@ -36,13 +36,18 @@ LT_INIT
 AM_CPPFLAGS="-I\${top_builddir} -I\${top_srcdir}"
 AM_CPPFLAGS="$AM_CPPFLAGS -I\${top_builddir}/uriparser/include/uriparser -I\${top_srcdir}/uriparser/include/uriparser"
 AM_CPPFLAGS="$AM_CPPFLAGS -I\${top_builddir}/uthash/src -I\${top_srcdir}/uthash/src"
-AC_SUBST([AM_CPPFLAGS])
 
 if test x"$GCC" = x"yes" ; then
 	test x"$empty_cppflags" = x"yes" && CPPFLAGS="$CPPFLAGS -W -Wall"
 	test x"$empty_cflags" = x"yes" && CFLAGS="$CFLAGS -ggdb -O0"
 	test x"$empty_cxxflags" = x"yes" && CXXFLAGS="$CXXFLAGS -ggdb -O0"
+	AM_CFLAGS="$AM_CFLAGS -fvisibility=hidden"
+	AM_CXXFLAGS="$AM_CXXFLAGS -fvisibility=hidden"
 fi
+
+AC_SUBST([AM_CPPFLAGS])
+AC_SUBST([AM_CFLAGS])
+AC_SUBST([AM_CXXFLAGS])
 
 gui_backend=none
 

@@ -22,7 +22,7 @@
 
 namespace Talisker {
 
-	class Thread: public Object
+	class TALISKER_EXPORT_ Thread: public Object
 	{
 	public:
 		static Thread *currentThread(void);

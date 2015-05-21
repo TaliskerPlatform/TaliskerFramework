@@ -22,13 +22,13 @@
 
 namespace Talisker {
 
-	void debug(const char *format, ...);
-	void log(const char *format, ...);
-	void notice(const char *format, ...);
-	void warn(const char *format, ...);
-	void err(const char *format, ...);
+	void TALISKER_EXPORT_ debug(const char *format, ...);
+	void TALISKER_EXPORT_ log(const char *format, ...);
+	void TALISKER_EXPORT_ notice(const char *format, ...);
+	void TALISKER_EXPORT_ warn(const char *format, ...);
+	void TALISKER_EXPORT_ err(const char *format, ...);
 
-	class Process: public Object
+	class TALISKER_EXPORT_ Process: public Object
 	{
 	public:
 		static Process *currentProcess();

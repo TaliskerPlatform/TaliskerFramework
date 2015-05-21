@@ -23,7 +23,7 @@ namespace Talisker
 {
 	struct FactoryEntry;
 
-	class Registry: virtual public IRegistry, public Object
+	class TALISKER_EXPORT_ Registry: virtual public IRegistry, public Object
 	{
 	public:
 		static IObject *constructor(void);

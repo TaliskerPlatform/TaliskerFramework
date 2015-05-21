@@ -20,7 +20,7 @@
 
 namespace Talisker
 {
-	class String: public Object
+	class TALISKER_EXPORT_ String: public Object
 	{
 	public:
 		static const size_t endpos = (size_t) -1;
